@@ -31,6 +31,7 @@ export interface transformLoadConfig {
   role: iam.IRole;
   docker?: boolean;
   memorySize?: number;
+  timeout?: Duration;
   architecture?: lambda.Architecture;
   layerArns?: string[];
   rds?: lambdaRds;
@@ -63,12 +64,12 @@ export default class Pipeline extends Construct {
         handler: props.transformLoadConfig.handler,
         code: lambda.Code.fromAsset(props.transformLoadConfig.path),
         memorySize: props.transformLoadConfig.memorySize || 256,
+        timeout: props.transformLoadConfig.timeout || Duration.seconds(10),
         architecture: props.transformLoadConfig.architecture || lambda.Architecture.ARM_64,
         role: props.transformLoadConfig.role,
-        timeout: Duration.seconds(10),
         ...(props.transformLoadConfig.rds?.network ? props.transformLoadConfig.rds.network : {}),
         environment: {
-          ...(props.transformLoadConfig.rds ? { SECRET_NAME: props.transformLoadConfig.rds.secret.secretName } : {}),
+          ...(props.transformLoadConfig.rds ? { RDS_SECRET_NAME: props.transformLoadConfig.rds.secret.secretName } : {}),
         },
       });
     } else {
@@ -83,6 +84,10 @@ export default class Pipeline extends Construct {
           ...(props.transformLoadConfig.rds ? { SECRET_NAME: props.transformLoadConfig.rds.secret.secretName } : {}),
         },
       });
+    }
+
+    if (props.transformLoadConfig.rds) {
+      props.transformLoadConfig.rds.secret.grantRead(transformLoadLambda);
     }
 
     if (props.transformLoadConfig.layerArns) {
