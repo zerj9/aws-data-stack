@@ -60,6 +60,8 @@ export default class DataPipelines extends Construct {
       transformLoadConfig: {
         path: path.join(__dirname, 'files/dit-trade-barriers-tl'),
         handler: 'main.handler',
+        memorySize: 512,
+        timeout: Duration.seconds(20),
         layerArns: [
           'arn:aws:lambda:eu-west-2:336392948345:layer:AWSSDKPandas-Python311-Arm64:4',
           sqlalchemyLayer.layerVersionArn,
