@@ -47,6 +47,4 @@ def handler(event, context):
         'rawKey': key,
         'datasetProvider': config['datasetProvider'],
         'datasetName': config['datasetName'],
-        'dataLakeBucket': config['dataLakeBucket'],
-        'dataLakeDatabaseName': config['dataLakeDatabaseName']
     }
